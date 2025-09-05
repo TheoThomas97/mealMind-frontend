@@ -1,6 +1,6 @@
 // src/pages/Home.tsx
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGetRecipesQuery } from "../utils/api";
 
 // normalize API shape (paginated or array)
@@ -41,7 +41,8 @@ export default function Home() {
           style={{
             width: "100%", height: 48, padding: "0 16px",
             border: "2px solid #cfcfcf", borderRadius: 10,
-            background: "#fafafa", fontSize: 16, outline: "none"
+            background: "#fafafa", fontSize: 16, outline: "none",
+            color: "#000"
           }}
         />
       </div>
@@ -63,10 +64,13 @@ export default function Home() {
       ) : (
         <div style={{ textAlign: "center", marginTop: 40 }}>
           <p style={{ color: "#666" }}>No meals yet. Add one on the Recipes page.</p>
-          <div style={{ marginTop: 24 }}>
-            <a href="/login" style={{ marginRight: 16 }}>Log In</a>
-            <a href="/signup">Sign Up</a>
-          </div>
+          {/* Only show Log In / Sign Up if not logged in */}
+          {!localStorage.getItem("access") && (
+            <div style={{ marginTop: 24 }}>
+              <a href="/login" style={{ marginRight: 16 }}>Log In</a>
+              <a href="/signup">Sign Up</a>
+            </div>
+          )}
         </div>
       )}
       <style>{`
@@ -80,6 +84,7 @@ export default function Home() {
 
 function MealCard({ recipe }: { recipe: any }) {
   const img = recipe.image_url as string | undefined;
+  const navigate = useNavigate();
 
   return (
     <article style={{ display: "flex", flexDirection: "column" }}>
@@ -130,8 +135,8 @@ function MealCard({ recipe }: { recipe: any }) {
             fontSize: 16,
             cursor: "pointer",
           }}
-          // Use servings or a placeholder; change to cook_time if you add that field later
           title="Cook Time"
+          onClick={() => navigate(`/recipes/${recipe.id}`)}
         >
           Cook Time
         </button>
